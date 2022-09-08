@@ -16,5 +16,7 @@ func main() {
 	e.DELETE("/deleteProductById", api.DeleteProductById)
 	e.PUT("/modifyProduct", api.ModifyProduct)
 
+	e.GET("/getAllContainers", api.GetAllContainers)
+
 	e.Logger.Fatal(e.Start(":4747"))
 }

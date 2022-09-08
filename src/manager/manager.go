@@ -13,41 +13,41 @@ func NewManager() Manager {
 	return Manager{}
 }
 
-func (ma *Manager) GetAllProducts() ([]model.Product, error) {
+func (ma *Manager) GetAllProducts() ([]model.ProductView, error) {
 	db, close, err := db.ObtenerConexionDb()
 	defer close()
 
 	if err != nil {
-		return []model.Product{}, err
+		return []model.ProductView{}, err
 	}
 
 	productos := []model.Producto{}
 	tx := db.Find(&productos)
 
-	products := []model.Product{}
-	for _, product := range productos {
-		products = append(products, model.Product{
-			Id:           product.ID,
-			Nombre:       product.Nombre,
-			IdContenedor: product.IDContenedor,
-			Cantidad:     int16(product.Cantidad),
+	products := []model.ProductView{}
+	for _, producto := range productos {
+		products = append(products, model.ProductView{
+			Id:           producto.ID,
+			Nombre:       producto.Nombre,
+			IdContenedor: producto.IDContenedor,
+			Cantidad:     int16(producto.Cantidad),
 		})
 	}
 
 	return products, tx.Error
 }
 
-func (ma *Manager) CreateProduct(productRequest model.Producto) (model.Product, error) {
+func (ma *Manager) CreateProduct(productRequest model.Producto) (model.ProductView, error) {
 	db, close, err := db.ObtenerConexionDb()
 	defer close()
 
 	if err != nil {
-		return model.Product{}, err
+		return model.ProductView{}, err
 	}
 
 	tx := db.Create(&productRequest)
 
-	product := model.Product{
+	product := model.ProductView{
 		Id:           productRequest.ID,
 		IdContenedor: productRequest.IDContenedor,
 		Nombre:       productRequest.Nombre,
@@ -79,21 +79,43 @@ func (ma *Manager) DeleteProductById(param string) error {
 	return tx.Error
 }
 
-func (ma *Manager) ModifyProduct(productRequest model.Producto) (model.Product, error) {
+func (ma *Manager) ModifyProduct(productRequest model.Producto) (model.ProductView, error) {
 	db, close, err := db.ObtenerConexionDb()
 	defer close()
 
 	if err != nil {
-		return model.Product{}, err
+		return model.ProductView{}, err
 	}
 
 	tx := db.Save(&productRequest)
 
-	product := model.Product{
+	product := model.ProductView{
 		Id:           productRequest.ID,
 		IdContenedor: productRequest.IDContenedor,
 		Nombre:       productRequest.Nombre,
 		Cantidad:     int16(productRequest.Cantidad)}
 
 	return product, tx.Error
+}
+
+func (ma *Manager) GetAllContainers() ([]model.ContainerView, error) {
+	db, close, err := db.ObtenerConexionDb()
+	defer close()
+
+	if err != nil {
+		return []model.ContainerView{}, err
+	}
+
+	contenedores := []model.Contenedor{}
+	tx := db.Find(&contenedores)
+
+	containers := []model.ContainerView{}
+	for _, producto := range contenedores {
+		containers = append(containers, model.ContainerView{
+			Id:     producto.ID,
+			Nombre: producto.Nombre,
+		})
+	}
+
+	return containers, tx.Error
 }

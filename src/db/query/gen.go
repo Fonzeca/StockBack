@@ -13,33 +13,38 @@ import (
 
 func Use(db *gorm.DB) *Query {
 	return &Query{
-		db:       db,
-		Producto: newProducto(db),
+		db:         db,
+		Contenedor: newContenedor(db),
+		Producto:   newProducto(db),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Producto producto
+	Contenedor contenedor
+	Producto   producto
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:       db,
-		Producto: q.Producto.clone(db),
+		db:         db,
+		Contenedor: q.Contenedor.clone(db),
+		Producto:   q.Producto.clone(db),
 	}
 }
 
 type queryCtx struct {
-	Producto *productoDo
+	Contenedor *contenedorDo
+	Producto   *productoDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Producto: q.Producto.WithContext(ctx),
+		Contenedor: q.Contenedor.WithContext(ctx),
+		Producto:   q.Producto.WithContext(ctx),
 	}
 }
 

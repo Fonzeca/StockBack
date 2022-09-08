@@ -66,3 +66,14 @@ func (api *Api) ModifyProduct(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, product)
 }
+
+func (api *Api) GetAllContainers(c echo.Context) error {
+
+	containers, err := api.manager.GetAllContainers()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, containers)
+}
