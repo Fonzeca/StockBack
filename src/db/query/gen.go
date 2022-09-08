@@ -15,6 +15,7 @@ func Use(db *gorm.DB) *Query {
 	return &Query{
 		db:         db,
 		Contenedor: newContenedor(db),
+		Historial:  newHistorial(db),
 		Producto:   newProducto(db),
 	}
 }
@@ -23,6 +24,7 @@ type Query struct {
 	db *gorm.DB
 
 	Contenedor contenedor
+	Historial  historial
 	Producto   producto
 }
 
@@ -32,18 +34,21 @@ func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:         db,
 		Contenedor: q.Contenedor.clone(db),
+		Historial:  q.Historial.clone(db),
 		Producto:   q.Producto.clone(db),
 	}
 }
 
 type queryCtx struct {
 	Contenedor *contenedorDo
+	Historial  *historialDo
 	Producto   *productoDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
 		Contenedor: q.Contenedor.WithContext(ctx),
+		Historial:  q.Historial.WithContext(ctx),
 		Producto:   q.Producto.WithContext(ctx),
 	}
 }

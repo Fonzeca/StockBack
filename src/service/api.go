@@ -116,3 +116,14 @@ func (api *Api) ModifyContainer(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, container)
 }
+
+func (api *Api) GetAllHistorys(c echo.Context) error {
+
+	historys, err := api.manager.GetAllHistorys()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, historys)
+}

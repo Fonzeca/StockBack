@@ -21,5 +21,7 @@ func main() {
 	e.DELETE("/deleteContainerById", api.DeleteContainerById)
 	e.PUT("/modifyContainer", api.ModifyContainer)
 
+	e.GET("/getAllHistorys", api.GetAllHistorys)
+
 	e.Logger.Fatal(e.Start(":4747"))
 }

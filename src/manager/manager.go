@@ -177,3 +177,28 @@ func (ma *Manager) ModifyContainer(containerRequestBody model.Contenedor) (model
 
 	return container, tx.Error
 }
+
+func (ma *Manager) GetAllHistorys() ([]model.HistoryView, error) {
+	db, close, err := db.ObtenerConexionDb()
+	defer close()
+
+	if err != nil {
+		return []model.HistoryView{}, err
+	}
+
+	historiales := []model.Historial{}
+	tx := db.Find(&historiales)
+
+	historys := []model.HistoryView{}
+	for _, historial := range historiales {
+		historys = append(historys, model.HistoryView{
+			Id:         historial.ID,
+			IdProducto: historial.IDProducto,
+			Fecha:      historial.Fecha,
+			Cantidad:   int16(historial.Cantidad),
+			Tipo:       historial.Tipo,
+		})
+	}
+
+	return historys, tx.Error
+}
