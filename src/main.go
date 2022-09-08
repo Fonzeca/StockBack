@@ -23,5 +23,7 @@ func main() {
 
 	e.GET("/getAllHistorys", api.GetAllHistorys)
 
+	e.PUT("/addProductStockById", api.AddProductStockById)
+
 	e.Logger.Fatal(e.Start(":4747"))
 }

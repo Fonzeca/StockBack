@@ -4,9 +4,9 @@ import "time"
 
 type ProductView struct {
 	Id           int32  `json:"id"`
-	Nombre       string `json:"nombre"`
+	Nombre       string `json:"nombre,omitempty"`
 	IdContenedor *int32 `json:"id_contenedor,omitempty"`
-	Cantidad     int16  `json:"cantidad"`
+	Cantidad     int16  `json:"cantidad,omitempty"`
 }
 
 type ContainerView struct {

@@ -57,7 +57,7 @@ func (ma *Manager) CreateProduct(productRequest model.Producto) (model.ProductVi
 	return product, tx.Error
 }
 
-func (ma *Manager) DeleteProductById(param string) error {
+func (ma *Manager) DeleteProductById(idParam string) error {
 	db, close, err := db.ObtenerConexionDb()
 	defer close()
 
@@ -65,16 +65,16 @@ func (ma *Manager) DeleteProductById(param string) error {
 		return err
 	}
 
-	id, parseErr := strconv.Atoi(param)
+	id, idParseErr := strconv.Atoi(idParam)
 
-	if parseErr != nil {
-		return parseErr
+	if idParseErr != nil {
+		return idParseErr
 	}
 
-	product := model.Producto{
+	producto := model.Producto{
 		ID: int32(id),
 	}
-	tx := db.Delete(&product)
+	tx := db.Delete(&producto)
 
 	return tx.Error
 }
@@ -138,7 +138,7 @@ func (ma *Manager) CreateContainer(containerRequestBody model.Contenedor) (model
 	return container, tx.Error
 }
 
-func (ma *Manager) DeleteContainerById(param string) error {
+func (ma *Manager) DeleteContainerById(idParam string) error {
 	db, close, err := db.ObtenerConexionDb()
 	defer close()
 
@@ -146,16 +146,16 @@ func (ma *Manager) DeleteContainerById(param string) error {
 		return err
 	}
 
-	id, parseErr := strconv.Atoi(param)
+	id, idParseErr := strconv.Atoi(idParam)
 
-	if parseErr != nil {
-		return parseErr
+	if idParseErr != nil {
+		return idParseErr
 	}
 
-	container := model.Contenedor{
+	contenedor := model.Contenedor{
 		ID: int32(id),
 	}
-	tx := db.Delete(&container)
+	tx := db.Delete(&contenedor)
 
 	return tx.Error
 }
@@ -201,4 +201,49 @@ func (ma *Manager) GetAllHistorys() ([]model.HistoryView, error) {
 	}
 
 	return historys, tx.Error
+}
+
+func (ma *Manager) AddProductStockById(Idparam string, amountParam string) (model.ProductView, error) {
+	db, close, err := db.ObtenerConexionDb()
+	defer close()
+
+	if err != nil {
+		return model.ProductView{}, err
+	}
+
+	id, idParseErr := strconv.Atoi(Idparam)
+
+	if idParseErr != nil {
+		return model.ProductView{}, idParseErr
+	}
+
+	amount, amountParseErr := strconv.Atoi(Idparam)
+
+	if amountParseErr != nil {
+		return model.ProductView{}, amountParseErr
+	}
+
+	producto := model.Producto{
+		ID: int32(id),
+	}
+	tx := db.Find(&producto)
+
+	if tx.Error != nil {
+		return model.ProductView{}, tx.Error
+	}
+
+	productoUpdated := model.Producto{
+		ID:           int32(id),
+		Nombre:       producto.Nombre,
+		IDContenedor: producto.IDContenedor,
+		Cantidad:     producto.Cantidad + int32(amount),
+	}
+	tx = db.Save(&productoUpdated)
+
+	updatedProduct := model.ProductView{
+		Nombre:   producto.Nombre,
+		Cantidad: int16(producto.Cantidad) + int16(amount),
+	}
+
+	return updatedProduct, tx.Error
 }
