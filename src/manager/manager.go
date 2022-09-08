@@ -5,6 +5,7 @@ import (
 	"Mindia/Stock1/Stock/src/db/model"
 	"errors"
 	"strconv"
+	"time"
 )
 
 type Manager struct {
@@ -241,6 +242,13 @@ func (ma *Manager) AddProductStockById(Idparam string, amountParam string) (mode
 	}
 	tx = db.Save(&productoUpdated)
 
+	if tx.Error == nil {
+		historyErr := createHistory(productoUpdated.ID, int32(amount), "entrada")
+		if err != nil {
+			return model.ProductView{}, historyErr
+		}
+	}
+
 	updatedProduct := model.ProductView{
 		Nombre:   productoUpdated.Nombre,
 		Cantidad: int16(productoUpdated.Cantidad),
@@ -290,10 +298,37 @@ func (ma *Manager) RemoveProductStockById(Idparam string, amountParam string) (m
 	}
 	tx = db.Save(&productoUpdated)
 
+	if tx.Error == nil {
+		historyErr := createHistory(productoUpdated.ID, int32(amount), "salida")
+		if err != nil {
+			return model.ProductView{}, historyErr
+		}
+	}
+
 	updatedProduct := model.ProductView{
 		Nombre:   productoUpdated.Nombre,
 		Cantidad: int16(productoUpdated.Cantidad),
 	}
 
 	return updatedProduct, tx.Error
+}
+
+func createHistory(productId int32, amount int32, kind string) error {
+	db, close, err := db.ObtenerConexionDb()
+	defer close()
+
+	if err != nil {
+		return err
+	}
+
+	historial := model.Historial{
+		IDProducto: productId,
+		Fecha:      time.Now(),
+		Cantidad:   amount,
+		Tipo:       kind,
+	}
+
+	tx := db.Save(&historial)
+
+	return tx.Error
 }
