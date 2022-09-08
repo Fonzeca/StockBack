@@ -3,7 +3,7 @@ package model
 import "time"
 
 type ProductView struct {
-	Id           int32  `json:"id"`
+	Id           int32  `json:"id,omitempty"`
 	Nombre       string `json:"nombre,omitempty"`
 	IdContenedor *int32 `json:"id_contenedor,omitempty"`
 	Cantidad     int16  `json:"cantidad,omitempty"`

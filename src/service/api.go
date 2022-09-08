@@ -141,3 +141,17 @@ func (api *Api) AddProductStockById(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, product)
 }
+
+func (api *Api) RemoveProductStockById(c echo.Context) error {
+	val, _ := c.FormParams()
+	id := val.Get("id")
+	amount := val.Get("amount")
+
+	product, err := api.manager.RemoveProductStockById(id, amount)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, product)
+}
