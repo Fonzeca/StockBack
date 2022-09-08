@@ -110,10 +110,10 @@ func (ma *Manager) GetAllContainers() ([]model.ContainerView, error) {
 	tx := db.Find(&contenedores)
 
 	containers := []model.ContainerView{}
-	for _, producto := range contenedores {
+	for _, contenedor := range contenedores {
 		containers = append(containers, model.ContainerView{
-			Id:     producto.ID,
-			Nombre: producto.Nombre,
+			Id:     contenedor.ID,
+			Nombre: contenedor.Nombre,
 		})
 	}
 
@@ -136,4 +136,26 @@ func (ma *Manager) CreateContainer(containerRequestBody model.Contenedor) (model
 	}
 
 	return container, tx.Error
+}
+
+func (ma *Manager) DeleteContainerById(param string) error {
+	db, close, err := db.ObtenerConexionDb()
+	defer close()
+
+	if err != nil {
+		return err
+	}
+
+	id, parseErr := strconv.Atoi(param)
+
+	if parseErr != nil {
+		return parseErr
+	}
+
+	container := model.Contenedor{
+		ID: int32(id),
+	}
+	tx := db.Delete(&container)
+
+	return tx.Error
 }

@@ -90,3 +90,16 @@ func (api *Api) CreateContainer(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, container)
 }
+
+func (api *Api) DeleteContainerById(c echo.Context) error {
+	val, _ := c.FormParams()
+	id := val.Get("id")
+
+	err := api.manager.DeleteContainerById(id)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.NoContent(http.StatusOK)
+}
