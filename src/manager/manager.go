@@ -159,3 +159,21 @@ func (ma *Manager) DeleteContainerById(param string) error {
 
 	return tx.Error
 }
+
+func (ma *Manager) ModifyContainer(containerRequestBody model.Contenedor) (model.ContainerView, error) {
+	db, close, err := db.ObtenerConexionDb()
+	defer close()
+
+	if err != nil {
+		return model.ContainerView{}, err
+	}
+
+	tx := db.Save(&containerRequestBody)
+
+	container := model.ContainerView{
+		Id:     containerRequestBody.ID,
+		Nombre: containerRequestBody.Nombre,
+	}
+
+	return container, tx.Error
+}

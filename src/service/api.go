@@ -103,3 +103,16 @@ func (api *Api) DeleteContainerById(c echo.Context) error {
 
 	return c.NoContent(http.StatusOK)
 }
+
+func (api *Api) ModifyContainer(c echo.Context) error {
+	data := model.Contenedor{}
+	c.Bind(&data)
+
+	container, err := api.manager.ModifyContainer(data)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, container)
+}

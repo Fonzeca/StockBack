@@ -19,6 +19,7 @@ func main() {
 	e.GET("/getAllContainers", api.GetAllContainers)
 	e.POST("/createContainer", api.CreateContainer)
 	e.DELETE("/deleteContainerById", api.DeleteContainerById)
+	e.PUT("/modifyContainer", api.ModifyContainer)
 
 	e.Logger.Fatal(e.Start(":4747"))
 }
