@@ -53,3 +53,16 @@ func (api *Api) DeleteProductById(c echo.Context) error {
 
 	return c.NoContent(http.StatusOK)
 }
+
+func (api *Api) ModifyProduct(c echo.Context) error {
+	data := model.Producto{}
+	c.Bind(&data)
+
+	product, err := api.manager.ModifyProduct(data)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, product)
+}

@@ -14,6 +14,7 @@ func main() {
 	e.GET("/getAllProducts", api.GetAllProducts)
 	e.POST("/createProduct", api.CreateProduct)
 	e.DELETE("/deleteProductById", api.DeleteProductById)
+	e.PUT("/modifyProduct", api.ModifyProduct)
 
 	e.Logger.Fatal(e.Start(":4747"))
 }
