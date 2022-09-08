@@ -77,3 +77,16 @@ func (api *Api) GetAllContainers(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, containers)
 }
+
+func (api *Api) CreateContainer(c echo.Context) error {
+	data := model.Contenedor{}
+	c.Bind(&data)
+
+	container, err := api.manager.CreateContainer(data)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, container)
+}

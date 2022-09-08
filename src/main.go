@@ -17,6 +17,7 @@ func main() {
 	e.PUT("/modifyProduct", api.ModifyProduct)
 
 	e.GET("/getAllContainers", api.GetAllContainers)
+	e.POST("/createContainer", api.CreateContainer)
 
 	e.Logger.Fatal(e.Start(":4747"))
 }

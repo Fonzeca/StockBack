@@ -79,7 +79,7 @@ func (ma *Manager) DeleteProductById(param string) error {
 	return tx.Error
 }
 
-func (ma *Manager) ModifyProduct(productRequest model.Producto) (model.ProductView, error) {
+func (ma *Manager) ModifyProduct(productRequestBody model.Producto) (model.ProductView, error) {
 	db, close, err := db.ObtenerConexionDb()
 	defer close()
 
@@ -87,13 +87,13 @@ func (ma *Manager) ModifyProduct(productRequest model.Producto) (model.ProductVi
 		return model.ProductView{}, err
 	}
 
-	tx := db.Save(&productRequest)
+	tx := db.Save(&productRequestBody)
 
 	product := model.ProductView{
-		Id:           productRequest.ID,
-		IdContenedor: productRequest.IDContenedor,
-		Nombre:       productRequest.Nombre,
-		Cantidad:     int16(productRequest.Cantidad)}
+		Id:           productRequestBody.ID,
+		IdContenedor: productRequestBody.IDContenedor,
+		Nombre:       productRequestBody.Nombre,
+		Cantidad:     int16(productRequestBody.Cantidad)}
 
 	return product, tx.Error
 }
@@ -118,4 +118,22 @@ func (ma *Manager) GetAllContainers() ([]model.ContainerView, error) {
 	}
 
 	return containers, tx.Error
+}
+
+func (ma *Manager) CreateContainer(containerRequestBody model.Contenedor) (model.ContainerView, error) {
+	db, close, err := db.ObtenerConexionDb()
+	defer close()
+
+	if err != nil {
+		return model.ContainerView{}, err
+	}
+
+	tx := db.Create(&containerRequestBody)
+
+	container := model.ContainerView{
+		Id:     containerRequestBody.ID,
+		Nombre: containerRequestBody.Nombre,
+	}
+
+	return container, tx.Error
 }
