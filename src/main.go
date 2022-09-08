@@ -12,6 +12,7 @@ func main() {
 	api := service.NewApi()
 
 	e.GET("/getAllProducts", api.GetAllProducts)
+	e.POST("/createProduct", api.CreateProduct)
 
 	e.Logger.Fatal(e.Start(":4747"))
 }

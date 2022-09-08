@@ -1,6 +1,7 @@
 package service
 
 import (
+	"Mindia/Stock1/Stock/src/db/model"
 	"Mindia/Stock1/Stock/src/manager"
 	"net/http"
 
@@ -25,4 +26,17 @@ func (api *Api) GetAllProducts(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, products)
+}
+
+func (api *Api) CreateProduct(c echo.Context) error {
+	data := model.Producto{}
+	c.Bind(&data)
+
+	product, err := api.manager.CreateProduct(data)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, product)
 }

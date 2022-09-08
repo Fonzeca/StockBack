@@ -35,3 +35,32 @@ func (ma *Manager) GetAllProducts() ([]model.Product, error) {
 
 	return products, tx.Error
 }
+
+func (ma *Manager) CreateProduct(productRequest model.Producto) (model.Product, error) {
+	db, close, err := db.ObtenerConexionDb()
+	defer close()
+
+	if err != nil {
+		return model.Product{}, err
+	}
+
+	tx := db.Create(&productRequest)
+
+	var product model.Product
+	if productRequest.IDContenedor == nil {
+		product = model.Product{
+			Id:       productRequest.ID,
+			Nombre:   productRequest.Nombre,
+			Cantidad: int16(productRequest.Cantidad),
+		}
+	} else {
+		product = model.Product{
+			Id:           productRequest.ID,
+			IdContenedor: *productRequest.IDContenedor,
+			Nombre:       productRequest.Nombre,
+			Cantidad:     int16(productRequest.Cantidad),
+		}
+	}
+
+	return product, tx.Error
+}
