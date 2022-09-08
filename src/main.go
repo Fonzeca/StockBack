@@ -13,6 +13,7 @@ func main() {
 
 	e.GET("/getAllProducts", api.GetAllProducts)
 	e.POST("/createProduct", api.CreateProduct)
+	e.DELETE("/deleteProductById", api.DeleteProductById)
 
 	e.Logger.Fatal(e.Start(":4747"))
 }

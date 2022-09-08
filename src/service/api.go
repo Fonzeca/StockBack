@@ -40,3 +40,16 @@ func (api *Api) CreateProduct(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, product)
 }
+
+func (api *Api) DeleteProductById(c echo.Context) error {
+	val, _ := c.FormParams()
+	id := val.Get("id")
+
+	err := api.manager.DeleteProductById(id)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.NoContent(http.StatusOK)
+}
