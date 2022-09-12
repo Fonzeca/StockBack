@@ -15,6 +15,9 @@ func main() {
 	e.POST("/createProduct", api.CreateProduct)
 	e.DELETE("/deleteProductById", api.DeleteProductById)
 	e.PUT("/modifyProduct", api.ModifyProduct)
+	e.PUT("/addProductStockById", api.AddProductStockById)
+	e.PUT("/removeProductStockById", api.RemoveProductStockById)
+	e.GET("/getProductsByContainerId", api.GetProductsByContainerId)
 
 	e.GET("/getAllContainers", api.GetAllContainers)
 	e.POST("/createContainer", api.CreateContainer)
@@ -22,9 +25,6 @@ func main() {
 	e.PUT("/modifyContainer", api.ModifyContainer)
 
 	e.GET("/getAllHistorys", api.GetAllHistorys)
-
-	e.PUT("/addProductStockById", api.AddProductStockById)
-	e.PUT("/removeProductStockById", api.RemoveProductStockById)
 
 	e.Logger.Fatal(e.Start(":4747"))
 }

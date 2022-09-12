@@ -67,6 +67,19 @@ func (api *Api) ModifyProduct(c echo.Context) error {
 	return c.JSON(http.StatusOK, product)
 }
 
+func (api *Api) GetProductsByContainerId(c echo.Context) error {
+	val, _ := c.FormParams()
+	id := val.Get("id")
+
+	products, err := api.manager.GetProductsByContainerId(id)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, products)
+}
+
 func (api *Api) GetAllContainers(c echo.Context) error {
 
 	containers, err := api.manager.GetAllContainers()

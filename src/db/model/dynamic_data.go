@@ -10,8 +10,10 @@ type ProductView struct {
 }
 
 type ContainerView struct {
-	Id     int32  `json:"id"`
-	Nombre string `json:"nombre"`
+	Id        int32  `json:"id"`
+	Nombre    string `json:"nombre"`
+	Categoria string `json:"categoria"`
+	Cantidad  int16  `json:"cantidad"`
 }
 
 type HistoryView struct {

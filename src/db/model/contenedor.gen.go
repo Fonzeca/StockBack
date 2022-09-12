@@ -8,8 +8,10 @@ const TableNameContenedor = "contenedor"
 
 // Contenedor mapped from table <contenedor>
 type Contenedor struct {
-	ID     int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Nombre string `gorm:"column:nombre;not null" json:"nombre"`
+	ID        int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	Nombre    string `gorm:"column:nombre;not null" json:"nombre"`
+	Categoria string `gorm:"column:categoria;not null" json:"categoria"`
+	Cantidad  int32  `gorm:"column:cantidad;not null" json:"cantidad"`
 }
 
 // TableName Contenedor's table name

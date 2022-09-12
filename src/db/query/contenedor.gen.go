@@ -29,6 +29,8 @@ func newContenedor(db *gorm.DB) contenedor {
 	_contenedor.ALL = field.NewAsterisk(tableName)
 	_contenedor.ID = field.NewInt32(tableName, "id")
 	_contenedor.Nombre = field.NewString(tableName, "nombre")
+	_contenedor.Categoria = field.NewString(tableName, "categoria")
+	_contenedor.Cantidad = field.NewInt32(tableName, "cantidad")
 
 	_contenedor.fillFieldMap()
 
@@ -38,9 +40,11 @@ func newContenedor(db *gorm.DB) contenedor {
 type contenedor struct {
 	contenedorDo
 
-	ALL    field.Asterisk
-	ID     field.Int32
-	Nombre field.String
+	ALL       field.Asterisk
+	ID        field.Int32
+	Nombre    field.String
+	Categoria field.String
+	Cantidad  field.Int32
 
 	fieldMap map[string]field.Expr
 }
@@ -59,6 +63,8 @@ func (c *contenedor) updateTableName(table string) *contenedor {
 	c.ALL = field.NewAsterisk(table)
 	c.ID = field.NewInt32(table, "id")
 	c.Nombre = field.NewString(table, "nombre")
+	c.Categoria = field.NewString(table, "categoria")
+	c.Cantidad = field.NewInt32(table, "cantidad")
 
 	c.fillFieldMap()
 
@@ -75,9 +81,11 @@ func (c *contenedor) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *contenedor) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 2)
+	c.fieldMap = make(map[string]field.Expr, 4)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["nombre"] = c.Nombre
+	c.fieldMap["categoria"] = c.Categoria
+	c.fieldMap["cantidad"] = c.Cantidad
 }
 
 func (c contenedor) clone(db *gorm.DB) contenedor {

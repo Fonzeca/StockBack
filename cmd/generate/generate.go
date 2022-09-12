@@ -10,8 +10,8 @@ func main() {
 	// specify the output directory (default: "./query")
 	// ### if you want to query without context constrain, set mode gen.WithoutContext ###
 	g := gen.NewGenerator(gen.Config{
-		OutPath:      "./src/db/query",
-		ModelPkgPath: "./src/db/model",
+		OutPath:      "../../src/db/query",
+		ModelPkgPath: "../../src/db/model",
 		Mode:         gen.WithoutContext,
 		//if you want the nullable field generation property to be pointer type, set FieldNullable true
 		/* FieldNullable: true,*/
