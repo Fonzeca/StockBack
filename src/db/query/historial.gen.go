@@ -28,10 +28,12 @@ func newHistorial(db *gorm.DB) historial {
 	tableName := _historial.historialDo.TableName()
 	_historial.ALL = field.NewAsterisk(tableName)
 	_historial.ID = field.NewInt32(tableName, "id")
-	_historial.IDProducto = field.NewInt32(tableName, "id_producto")
 	_historial.Fecha = field.NewTime(tableName, "fecha")
 	_historial.Cantidad = field.NewInt32(tableName, "cantidad")
 	_historial.Tipo = field.NewString(tableName, "tipo")
+	_historial.NombreProducto = field.NewString(tableName, "nombre_producto")
+	_historial.NombreContenedor = field.NewString(tableName, "nombre_contenedor")
+	_historial.ContenedorID = field.NewInt32(tableName, "contenedor_id")
 
 	_historial.fillFieldMap()
 
@@ -41,12 +43,14 @@ func newHistorial(db *gorm.DB) historial {
 type historial struct {
 	historialDo
 
-	ALL        field.Asterisk
-	ID         field.Int32
-	IDProducto field.Int32
-	Fecha      field.Time
-	Cantidad   field.Int32
-	Tipo       field.String
+	ALL              field.Asterisk
+	ID               field.Int32
+	Fecha            field.Time
+	Cantidad         field.Int32
+	Tipo             field.String
+	NombreProducto   field.String
+	NombreContenedor field.String
+	ContenedorID     field.Int32
 
 	fieldMap map[string]field.Expr
 }
@@ -64,10 +68,12 @@ func (h historial) As(alias string) *historial {
 func (h *historial) updateTableName(table string) *historial {
 	h.ALL = field.NewAsterisk(table)
 	h.ID = field.NewInt32(table, "id")
-	h.IDProducto = field.NewInt32(table, "id_producto")
 	h.Fecha = field.NewTime(table, "fecha")
 	h.Cantidad = field.NewInt32(table, "cantidad")
 	h.Tipo = field.NewString(table, "tipo")
+	h.NombreProducto = field.NewString(table, "nombre_producto")
+	h.NombreContenedor = field.NewString(table, "nombre_contenedor")
+	h.ContenedorID = field.NewInt32(table, "contenedor_id")
 
 	h.fillFieldMap()
 
@@ -84,12 +90,14 @@ func (h *historial) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (h *historial) fillFieldMap() {
-	h.fieldMap = make(map[string]field.Expr, 5)
+	h.fieldMap = make(map[string]field.Expr, 7)
 	h.fieldMap["id"] = h.ID
-	h.fieldMap["id_producto"] = h.IDProducto
 	h.fieldMap["fecha"] = h.Fecha
 	h.fieldMap["cantidad"] = h.Cantidad
 	h.fieldMap["tipo"] = h.Tipo
+	h.fieldMap["nombre_producto"] = h.NombreProducto
+	h.fieldMap["nombre_contenedor"] = h.NombreContenedor
+	h.fieldMap["contenedor_id"] = h.ContenedorID
 }
 
 func (h historial) clone(db *gorm.DB) historial {

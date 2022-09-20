@@ -25,6 +25,7 @@ func main() {
 	e.PUT("/modifyContainer", api.ModifyContainer)
 
 	e.GET("/getAllHistorys", api.GetAllHistorys)
+	e.GET("/getHistoryByContainerId", api.GetHistoryByContainerId)
 
 	e.Logger.Fatal(e.Start(":4747"))
 }

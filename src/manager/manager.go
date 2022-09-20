@@ -17,28 +17,23 @@ func NewManager() Manager {
 	return Manager{}
 }
 
-func (ma *Manager) GetAllProducts() ([]model.ProductView, error) {
+func (ma *Manager) GetAllProducts() ([]model.ProductContainerNameView, error) {
 	db, close, err := db.ObtenerConexionDb()
 	defer close()
 
 	if err != nil {
-		return []model.ProductView{}, err
+		return []model.ProductContainerNameView{}, err
 	}
 
-	productos := []model.Producto{}
-	tx := db.Find(&productos)
+	productos := []model.ProductContainerNameView{}
+	//tx := db.Find(&productos)
 
-	products := []model.ProductView{}
-	for _, producto := range productos {
-		products = append(products, model.ProductView{
-			Id:           producto.ID,
-			Nombre:       producto.Nombre,
-			IdContenedor: producto.IDContenedor,
-			Cantidad:     int16(producto.Cantidad),
-		})
-	}
+	//tx := db.Model(&model.Producto{}).Select("producto.id, producto.nombre, producto.cantidad, contenedor.nombre").Joins("join contenedor on contenedor.id = producto.id_contenedor").Scan(&products)
+	tx := db.Model(&model.Producto{}).Select("producto.id, producto.nombre, producto.cantidad").Joins("join contenedor on contenedor.id = producto.id_contenedor").Scan(&productos)
 
-	return products, tx.Error
+	//tx := db.Joins("container").Find(&productos)
+
+	return productos, tx.Error
 }
 
 func (ma *Manager) CreateProduct(productRequest model.Producto) (model.ProductView, error) {
@@ -58,9 +53,19 @@ func (ma *Manager) CreateProduct(productRequest model.Producto) (model.ProductVi
 		Cantidad:     int16(productRequest.Cantidad),
 	}
 
-	containerUpdatedErr := updateContainer(db, &productRequest, int(productRequest.Cantidad))
+	containerName, containerId, containerUpdatedErr := updateContainer(db, &productRequest, int(productRequest.Cantidad))
 	if containerUpdatedErr != nil {
 		return model.ProductView{}, containerUpdatedErr
+	}
+
+	if product.Cantidad <= 0 {
+		return product, tx.Error
+	}
+
+	historyErr := createHistory(product.Nombre, containerName, int32(product.Cantidad), "entrada", containerId)
+
+	if historyErr != nil {
+		return model.ProductView{}, historyErr
 	}
 
 	return product, tx.Error
@@ -85,9 +90,15 @@ func (ma *Manager) DeleteProductById(idParam string) error {
 	}
 
 	db.Find(&producto)
-	containerUpdatedErr := updateContainer(db, &producto, -int(producto.Cantidad))
+	containerName, containerId, containerUpdatedErr := updateContainer(db, &producto, -int(producto.Cantidad))
 	if containerUpdatedErr != nil {
 		return containerUpdatedErr
+	}
+
+	historyErr := createHistory(producto.Nombre, containerName, producto.Cantidad, "eliminado", containerId)
+
+	if historyErr != nil {
+		return historyErr
 	}
 
 	tx := db.Delete(&producto)
@@ -252,11 +263,45 @@ func (ma *Manager) GetAllHistorys() ([]model.HistoryView, error) {
 	historys := []model.HistoryView{}
 	for _, historial := range historiales {
 		historys = append(historys, model.HistoryView{
-			Id:         historial.ID,
-			IdProducto: historial.IDProducto,
-			Fecha:      historial.Fecha,
-			Cantidad:   int16(historial.Cantidad),
-			Tipo:       historial.Tipo,
+			Id:               historial.ID,
+			NombreProducto:   historial.NombreProducto,
+			NombreContenedor: historial.NombreContenedor,
+			Fecha:            historial.Fecha,
+			Cantidad:         int16(historial.Cantidad),
+			Tipo:             historial.Tipo,
+		})
+	}
+
+	return historys, tx.Error
+}
+
+func (ma *Manager) GetHistoryByContainerId(idParam string) ([]model.HistoryView, error) {
+	db, close, err := db.ObtenerConexionDb()
+	defer close()
+
+	if err != nil {
+		return []model.HistoryView{}, err
+	}
+
+	id, idParseErr := strconv.Atoi(idParam)
+
+	if idParseErr != nil {
+		return nil, idParseErr
+	}
+
+	historiales := []model.Historial{}
+	tx := db.Where("contenedor_id", id).Find(&historiales)
+
+	historys := []model.HistoryView{}
+	for _, historial := range historiales {
+		historys = append(historys, model.HistoryView{
+			Id:               historial.ID,
+			NombreProducto:   historial.NombreProducto,
+			NombreContenedor: historial.NombreContenedor,
+			Fecha:            historial.Fecha,
+			Cantidad:         int16(historial.Cantidad),
+			Tipo:             historial.Tipo,
+			ContenedorId:     int16(historial.ContenedorID),
 		})
 	}
 
@@ -293,16 +338,16 @@ func (ma *Manager) AddProductStockById(Idparam string, amountParam string) (mode
 		return model.ProductView{}, productUpdatedErr
 	}
 
-	historyErr := createHistory(producto.ID, int32(amount), "entrada")
-
-	if historyErr != nil {
-		return model.ProductView{}, historyErr
-	}
-
-	containerUpdatedErr := updateContainer(db, &producto, amount)
+	containerName, containerId, containerUpdatedErr := updateContainer(db, &producto, amount)
 
 	if containerUpdatedErr != nil {
 		return model.ProductView{}, containerUpdatedErr
+	}
+
+	historyErr := createHistory(producto.Nombre, containerName, int32(amount), "entrada", containerId)
+
+	if historyErr != nil {
+		return model.ProductView{}, historyErr
 	}
 
 	return updatedProduct, nil
@@ -337,16 +382,16 @@ func (ma *Manager) RemoveProductStockById(Idparam string, amountParam string) (m
 		return model.ProductView{}, productUpdatedErr
 	}
 
-	historyErr := createHistory(producto.ID, int32(amount), "salida")
-
-	if historyErr != nil {
-		return model.ProductView{}, historyErr
-	}
-
-	containerUpdatedErr := updateContainer(db, &producto, -amount)
+	containerName, containerId, containerUpdatedErr := updateContainer(db, &producto, -amount)
 
 	if containerUpdatedErr != nil {
 		return model.ProductView{}, containerUpdatedErr
+	}
+
+	historyErr := createHistory(producto.Nombre, containerName, int32(amount), "salida", containerId)
+
+	if historyErr != nil {
+		return model.ProductView{}, historyErr
 	}
 
 	return updatedProduct, nil
@@ -380,7 +425,7 @@ func updateProduct(db *gorm.DB, producto *model.Producto, amount int) (model.Pro
 	return updatedProduct, tx.Error
 }
 
-func updateContainer(db *gorm.DB, producto *model.Producto, amount int) error {
+func updateContainer(db *gorm.DB, producto *model.Producto, amount int) (string, int32, error) {
 	contenedor := model.Contenedor{
 		ID: *producto.IDContenedor,
 	}
@@ -388,7 +433,7 @@ func updateContainer(db *gorm.DB, producto *model.Producto, amount int) error {
 	tx := db.Find(&contenedor)
 
 	if tx.Error != nil {
-		return tx.Error
+		return "", 0, tx.Error
 	}
 
 	contenedorUpdated := model.Contenedor{
@@ -400,13 +445,13 @@ func updateContainer(db *gorm.DB, producto *model.Producto, amount int) error {
 	tx = db.Save(&contenedorUpdated)
 
 	if tx.Error != nil {
-		return tx.Error
+		return "", 0, tx.Error
 	}
 
-	return nil
+	return contenedor.Nombre, contenedor.ID, nil
 }
 
-func createHistory(productId int32, amount int32, kind string) error {
+func createHistory(productName string, containerName string, amount int32, kind string, containerId int32) error {
 	db, close, err := db.ObtenerConexionDb()
 	defer close()
 
@@ -415,10 +460,12 @@ func createHistory(productId int32, amount int32, kind string) error {
 	}
 
 	historial := model.Historial{
-		IDProducto: productId,
-		Fecha:      time.Now(),
-		Cantidad:   amount,
-		Tipo:       kind,
+		NombreProducto:   productName,
+		NombreContenedor: containerName,
+		Fecha:            time.Now(),
+		Cantidad:         amount,
+		Tipo:             kind,
+		ContenedorID:     containerId,
 	}
 
 	tx := db.Save(&historial)

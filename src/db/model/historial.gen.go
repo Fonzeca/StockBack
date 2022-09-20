@@ -12,11 +12,13 @@ const TableNameHistorial = "historial"
 
 // Historial mapped from table <historial>
 type Historial struct {
-	ID         int32     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	IDProducto int32     `gorm:"column:id_producto;not null" json:"id_producto"`
-	Fecha      time.Time `gorm:"column:fecha;not null" json:"fecha"`
-	Cantidad   int32     `gorm:"column:cantidad;not null" json:"cantidad"`
-	Tipo       string    `gorm:"column:tipo;not null" json:"tipo"`
+	ID               int32     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	Fecha            time.Time `gorm:"column:fecha;not null" json:"fecha"`
+	Cantidad         int32     `gorm:"column:cantidad;not null" json:"cantidad"`
+	Tipo             string    `gorm:"column:tipo;not null" json:"tipo"`
+	NombreProducto   string    `gorm:"column:nombre_producto;not null" json:"nombre_producto"`
+	NombreContenedor string    `gorm:"column:nombre_contenedor;not null" json:"nombre_contenedor"`
+	ContenedorID     int32     `gorm:"column:contenedor_id" json:"contenedor_id"`
 }
 
 // TableName Historial's table name

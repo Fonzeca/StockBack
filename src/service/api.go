@@ -141,6 +141,18 @@ func (api *Api) GetAllHistorys(c echo.Context) error {
 	return c.JSON(http.StatusOK, historys)
 }
 
+func (api *Api) GetHistoryByContainerId(c echo.Context) error {
+	val, _ := c.FormParams()
+	id := val.Get("id")
+	historys, err := api.manager.GetHistoryByContainerId(id)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, historys)
+}
+
 func (api *Api) AddProductStockById(c echo.Context) error {
 	val, _ := c.FormParams()
 	id := val.Get("id")
