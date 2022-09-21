@@ -26,12 +26,8 @@ func (ma *Manager) GetAllProducts() ([]model.ProductContainerNameView, error) {
 	}
 
 	productos := []model.ProductContainerNameView{}
-	//tx := db.Find(&productos)
 
-	//tx := db.Model(&model.Producto{}).Select("producto.id, producto.nombre, producto.cantidad, contenedor.nombre").Joins("join contenedor on contenedor.id = producto.id_contenedor").Scan(&products)
-	tx := db.Model(&model.Producto{}).Select("producto.id, producto.nombre, producto.cantidad").Joins("join contenedor on contenedor.id = producto.id_contenedor").Scan(&productos)
-
-	//tx := db.Joins("container").Find(&productos)
+	tx := db.Model(&model.Producto{}).Select("producto.id, producto.nombre, producto.cantidad, contenedor.nombre as ContenedorNombre").Joins("join contenedor on contenedor.id = producto.id_contenedor").Scan(&productos)
 
 	return productos, tx.Error
 }
